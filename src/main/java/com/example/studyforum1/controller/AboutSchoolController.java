@@ -61,7 +61,7 @@ public class AboutSchoolController {
         return "Hello DevOps. Welcome " ;
     }
 
-    @PostMapping("/inserttext")
+    @PostMapping("/update")
     public String update(int id) {
         return showtext(id);
     }
