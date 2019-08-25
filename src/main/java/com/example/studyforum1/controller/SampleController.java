@@ -11,7 +11,7 @@ package com.example.studyforum1.controller;
 @EnableAutoConfiguration
 public class SampleController {
 
-    @RequestMapping("/aboutschool")
+    @RequestMapping("/api/aboutschool")
     @ResponseBody
     String home() {
         return "Hello World!";
