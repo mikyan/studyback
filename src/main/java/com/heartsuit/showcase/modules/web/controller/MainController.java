@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/main")
 @ResponseBody
 public class MainController {
 
@@ -66,7 +66,7 @@ public class MainController {
     }
 
     @GetMapping("/register")
-    public String register(String username,String pass) {
+    public  @ResponseBody String register(String username,String pass) {
         MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
         MongoDatabase db = mongoClient.getDatabase("studyforum");
         System.out.println("Connect to database successfully");
