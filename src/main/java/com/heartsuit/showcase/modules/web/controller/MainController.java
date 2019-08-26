@@ -22,8 +22,7 @@ public class MainController {
     @GetMapping("/login")
     public @ResponseBody
     String login(String username,String password) {
-
-        password=getSHA256Str(password);
+        String pass=getSHA256Str(password);
         try{
             // 连接到 mongodb 服务
             MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
@@ -33,7 +32,7 @@ public class MainController {
             MongoDatabase db = mongoClient.getDatabase("studyforum");
             System.out.println("Connect to database successfully");
             MongoCollection<Document> coll = db.getCollection("Users");
-            FindIterable<Document> findIterable = coll.find(new BasicDBObject("name",username).append("password",password));
+            FindIterable<Document> findIterable = coll.find(new BasicDBObject("username",username).append("password",pass));
             // counting documents in a collection
             //System.out.println(coll.getCount());
 
@@ -46,15 +45,15 @@ public class MainController {
             if(mongoCursor.hasNext())
             {
                 String json =  " {" +
-                " 'code': " + 0 + ","+
-                " 'message': " + "登陆成功" +","+
-                " 'token': " + tokenkey + username + (new Date().getTime()+60*60*1000)+","+
+                " \"code\": " + 0 + ","+
+                " \"message\": " + "登陆成功" +","+
+                " \"token\": " + tokenkey + username + (new Date().getTime()+60*60*1000)+","+
                 " } ";
                 return json;
             }else{
                 String json =  " {" +
-                        " 'code': " + 1 + ","+
-                        " 'message': " + "登陆失败，账号或密码错误" +","+
+                        " \"code\": " + 1 + ","+
+                        " \"message\": " + "登陆失败，账号或密码错误" +","+
                         " } ";
                 return json;
 
@@ -72,12 +71,12 @@ public class MainController {
         MongoDatabase db = mongoClient.getDatabase("studyforum");
         System.out.println("Connect to database successfully");
         MongoCollection<Document> coll = db.getCollection("Users");
-        FindIterable<Document> findIterable = coll.find(new BasicDBObject("name",username));
+        FindIterable<Document> findIterable = coll.find(new BasicDBObject("username",username));
         MongoCursor<Document> mongoCursor = findIterable.iterator();
         if(mongoCursor.hasNext()){
             String json= "{" +
-                    " 'code': " + -1 + ","+
-                    " 'message': " + "注册失败，账户名已存在" +","+
+                    " \"code\": " + -1 + ","+
+                    " \"message\": " + "注册失败，账户名已存在" +""+
                     " } ";
             return json;
         }
@@ -94,8 +93,8 @@ public class MainController {
 //        coll.insert(bson);
 //        System.out.println(json);
         String json= "{" +
-                " 'code': " + 2 + ","+
-                " 'message': " + "注册成功" +","+
+                " \"code\": " + 2 + ","+
+                "\"message\": " + "注册成功" +","+
                 " } ";
         return json;
     }
