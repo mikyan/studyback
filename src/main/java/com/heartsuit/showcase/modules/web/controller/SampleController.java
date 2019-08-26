@@ -1,5 +1,9 @@
 package com.heartsuit.showcase.modules.web.controller;
 
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +17,14 @@ public class SampleController {
 
     @RequestMapping("/api/aboutschool")
     @ResponseBody
-    String home() {
+    String home()
+    {
+        MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+        MongoDatabase db = mongoClient.getDatabase("studyforum");
+        System.out.println("Connect to database successfully");
+        MongoCollection<Document> coll = db.getCollection("talkItems");
+
+
         return "Hello World!";
     }
 

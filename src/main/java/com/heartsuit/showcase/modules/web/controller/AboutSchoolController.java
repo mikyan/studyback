@@ -7,8 +7,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,7 +33,6 @@ public class AboutSchoolController {
         FindIterable<Document> findIterable = coll.find().sort(new BasicDBObject("create_time",-1)).skip(id*10);
         ArrayList<String> arrayList=new ArrayList<>();
         MongoCursor<Document> mongoCursor = findIterable.iterator();
-
         int i=id;
         while(mongoCursor.hasNext()&&i<(id+10)){
             arrayList.add(mongoCursor.next().toJson());
@@ -43,19 +44,39 @@ public class AboutSchoolController {
 
     @RequestMapping(value = "/get",produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
-    public BufferedImage getImage() throws IOException {
+    public BufferedImage getImage(String id) throws IOException {
 
-        return ImageIO.read(new FileInputStream(new File("D:/test.jpg")));
+        return ImageIO.read(new FileInputStream(new File("/opt/frontserver/images/"+id +".png")));
     }
 
-    @PostMapping("/inserttext")
-    public String inserttext(String title,String description,  String viewNum) {
+    //插入学校周边数据
+    @PostMapping("/insert")
+    public String insert(String title, String description, String viewNum, MultipartFile image) {
         MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase("studyforum");
         MongoCollection<Document> coll = db.getCollection("aboutschool");
         Document document = new Document("title", title).
                 append("description", description).
                 append("viewNum", viewNum);
+        ObjectId objectId=document.getObjectId("_id");
+        String imgName=objectId.toString();
+        String exName = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
+        if(exName!="png"){
+            return "请使用png格式的图片";
+        }
+        String realName=imgName+"."+exName;
+        File file = new File("/opt/frontserver/images/"+realName);
+        if(!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+
+        try {
+            image.transferTo(file);
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+            return "请重新上传图片";
+        }
+
         coll.insertOne(document);
         return "Hello DevOps. Welcome " ;
     }
@@ -66,8 +87,4 @@ public class AboutSchoolController {
     }
 
 
-    @PostMapping("/greeting")
-    public String greeting(@RequestBody HashMap<String, String> params) {
-        return "Hello DevOps. Welcome " + params.get("name");
-    }
 }
