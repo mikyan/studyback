@@ -26,7 +26,6 @@ public class TalkController {
             MongoDatabase db = mongoClient.getDatabase("studyforum");
             System.out.println("Connect to database successfully");
             MongoCollection<Document> coll = db.getCollection("talkItems");
-
             FindIterable<Document> findIterable = coll.find()
                     .sort(new BasicDBObject("create_time", -1))
                     .skip(id * 10)
@@ -35,6 +34,7 @@ public class TalkController {
                             .append("text", "1")
                             .append("viewNum", 1)
                             .append("_id", 1));
+
             // counting documents in a collection
             //System.out.println(coll.getCount());
 
